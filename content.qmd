@@ -395,11 +395,18 @@ $Q$-almost surely for some $Q$-specific  constant $c' \in ]0,1/2]$, and $Y[0]$
 and $Y[1]$ are $Q$-integrable.
 
 We consider $(V,  W)$ as the context  in which two possible  actions $a=0$ and
-$a=1$   would   yield   the   counterfactual  rewards   $Y[0]$   and   $Y[1]$,
-respectively. One of  these actions, $A\in\{0,1\}$, is  factually carried out,
-resulting in the factual reward $Y = A  Y[1] + (1-A) Y[0]$, that is, $Y[1]$ if
-$A=1$  and  $Y[0]$  otherwise.   In  the  causal  inference  literature,  this
-definition of $Y$ is referred to as the consistency assumption.
+$a=1$ would yield the counterfactual  rewards $Y[0]$ and $Y[1]$, respectively.
+One of  these actions, $A\in\{0,1\}$,  is factually carried out,  resulting in
+the factual  reward $Y = A  Y[1] + (1-A) Y[0]$,  that is, $Y[1]$ if  $A=1$ and
+$Y[0]$ otherwise.  In the causal  inference literature, this definition of $Y$
+is referred to as the consistency assumption.
+
+In the  context of a randomized  clinical trial, the pair  $(V, W)$ represents
+baseline covariates, which are measured  before one of two possible treatments
+is assigned. The binary variable $A$ indicates the treatment randomly assigned
+to  a participant.   The  outcome  variable $Y$  measures  the  effect of  the
+treatment;  it is  viewed  as  the counterfactual  outcome  in a  hypothetical
+scenario where everyone would receive that same treatment.
 :::
 
 ::: {.callout-note appearance="simple"}
@@ -507,12 +514,16 @@ where
 
 2.  the  function $\Gen_{\theta}$ in  @eq-gen-theta is  an element of  a large
 collection, parametrized by the  finite-dimensional set $\Theta$, of functions
-mapping $\bbR^{d+1}$ to $\calX$.  
+mapping $\bbR^{d+1}$ to $\calX$. 
+
+For  simplicity, we  will  also refer  to the  function  $\Gen_{\theta}$ as  a
+*generator*. Moreover, we  emphasize that the entire parameter  $\theta$ is to
+be fitted, meaning there are no hyperparameters involved.
 
 Because  $\Gen_{\theta}(Z)$ belongs  to $\calX$,  we can  evaluate $\pi  \circ
 \Gen_{\theta}(Z)$, hence  the generator  can also be  used to  generate random
-variables in $\calO$. @fig-VAE  illustrates the architecture of the VAE
-used in this study.   It shows the key components of  the model, including the
+variables in $\calO$.   @fig-VAE illustrates the architecture of  the VAE used
+in  this study.   It shows  the  key components  of the  model, including  the
 encoder, the latent space, and the decoder, along with the flow of information
 between them.
 
@@ -580,7 +591,8 @@ Z^{(d)})$, which is transferred unchanged.
 3. **Gaussian sampling.** Compute $K\circ \Enc_{\theta_{1}} \circ J_{n}(Z)$ by
 evaluating $\mu + \sigma \odot  (Z^{(1)}, \ldots, Z^{(d)}) \in \bbR^{d}$. This
 amounts  to sampling  from the  Gaussian law  with mean  $\mu$ and  covariance
-matrix $\diag(\sigma)^2$.
+matrix  $\diag(\sigma)^2$. In  other  words,  $K$ enables  the  sampling of  a
+neighbor of the encoded version of $O_i$ in the latent space.
 
 4. **Decoding step.** Compute $\Dec_{\theta_{2}}\circ K\circ \Enc_{\theta_{1}}
 \circ J_{n}(Z)$,  which maps the encoded  version of $O_{i}$, that  is, $\mu +
@@ -1803,6 +1815,7 @@ $\calO$ whose law approximates $P$.
 ## Training the VAE {#sec-training-VAE}
 
 By running the next chunk of code, we set the VAE's configuration.
+
 ```{python, vae-training-simulation-preliminary}
 dimW = 3
 dimV = 2
@@ -1897,9 +1910,18 @@ section.
 
 Suppose that  we have  built a  generator $\Gen_{\thn}$  based on  the genuine
 observations $O_{1}$, $\ldots$, $O_{n}$ drawn from $P$.  How can we assess how
-well the  generator approximates $P$?  In  other words, how can  we assess how
-convincing are synthetic observations drawn from $\law(\Gen_{\theta_n}(Z))$ in
-their attempt to look like observations drawn from $P$?
+well the generator approximates $P$? 
+
+Ideally,  we  would like  to  evaluate  the  proximity between  the  generator
+associated with  $\Gen_{\theta_n}$ and the  true law $P$ of  the observations.
+However,    in    practice,   we    do    not    have   access    to    either
+$\law(\Gen_{\theta_n}(Z))$ or $P$. One approach would be to estimate a measure
+of  discrepancy between  these  two laws  (e.g., Kullback-Leibler  divergence)
+using data  sampled from  each, which would  allow us to  test whether  one of
+several generators is closer to the true law than the others. However, we have
+opted for  a different  approach, which, in  essence, assesses  how convincing
+synthetic observations drawn from $\law(\Gen_{\theta_n}(Z))$ are in resembling
+observations drawn from $P$.
 
 We propose three ways to address this  question. Each of them uses the genuine
 observations  $O_{n+1}$, $\ldots$,  $O_{n+n'}$  that were  not  used to  build
@@ -2058,40 +2080,25 @@ $f^{\sharp}(O_{i})$ of $O_{i}$ among $\Os_{1}$, $\ldots$, $\Os_{N}$.
 
 :::{#fig-DAG}
 
+
+
 ![](figures/DAG.jpg){height=400}
 
-DAG representing  how the random  variables produced  by $\Pi$ depend  on each
-other. 
-:::
+DAG representing how the random variables produced by $\Pi$ depend on each other.  :::
 
-The DAG is very  useful to unravel how the random  variables produced by $\Pi$
-depend on each other.  In particular, by $d$-separation [@Lauritzen], we learn
-from the  DAG that the  distances to  the nearest neighbor  within $\{\Os_{1},
-\ldots, \Os_{N}\}$  of $O_{1}$,  $\ldots$, $O_{n+n'}$ are  dependent pairwise.
-This  dependency prevents  the use  of  a Kolmogorov-Smirnov  test to  compare
-$\mu_{1:n}$ and $\mu_{(n+1):(n+n')}$.
+The DAG is very useful to unravel how the random variables produced by $\Pi$ depend on each other.  In particular, by $d$-separation [@Lauritzen], we learn from the DAG that the distances to the nearest neighbor within $\{\Os_{1}, \ldots, \Os_{N}\}$ of $O_{1}$, $\ldots$, $O_{n+n'}$ are dependent pairwise.  This dependency prevents the use of a Kolmogorov-Smirnov test to compare $\mu_{1:n}$ and $\mu_{(n+1):(n+n')}$.
 
 Moreover, conditionally on $\Os_{1}$, $\ldots$, $\Os_{N}$,
 
-- $O_{1}$, $\ldots$, $O_{n}$ are not independent (because, for any $1 \leq i <
-  j \leq n$, $\Os_{1}$ is a collider on the path $O_{i} \to \Os_{1} \leftarrow
-  O_{j}$);
+- $O_{1}$, $\ldots$, $O_{n}$ are not independent (because, for any $1 \leq i < j \leq n$, $\Os_{1}$ is a collider on the path $O_{i} \to \Os_{1} \leftarrow O_{j}$);
 
-- $f^{\sharp}(O_{1})$,   $\ldots$,  $f^{\sharp}(O_{n+n'})$   are  independent
-  (because,  for  any  $1  \leq  i  < j  \leq  n+n'$,  all  paths  leading  from
-  $f^{\sharp}(O_{i})$ to $f^{\sharp}(O_{j})$ are blocked);
+- $f^{\sharp}(O_{1})$, $\ldots$, $f^{\sharp}(O_{n+n'})$ are independent (because, for any $1 \leq i < j \leq n+n'$, all paths leading from $f^{\sharp}(O_{i})$ to $f^{\sharp}(O_{j})$ are blocked);
   
-- the distances to the  nearest neighbor within $\{\Os_{1}, \ldots, \Os_{N}\}$
-  of $O_{n+1}$, $\ldots$, $O_{n+n'}$ are mutually independent.
+- the distances to the nearest neighbor within $\{\Os_{1}, \ldots, \Os_{N}\}$ of $O_{n+1}$, $\ldots$, $O_{n+n'}$ are mutually independent.
 
-Therefore, conditionally on $\Os_{1}$, $\ldots$, $\Os_{N}$ and $\mu_{1:n}$, we
-can use t-tests to compare the  three first moments of $\mu_{(n+1):(n+n')}$ to
-those  of $\mu_{1:n}$.   By  the  central limit  theorem  and Slutsky's  lemma
-[@vdV98, Example  2.1 and Lemma  2.8], the  tests are asymptotically  valid as
-$n'$ goes to infinity.
+Therefore, conditionally on $\Os_{1}$, $\ldots$, $\Os_{N}$ and $\mu_{1:n}$, we can use t-tests to compare the three first moments of $\mu_{(n+1):(n+n')}$ to those of $\mu_{1:n}$.  By the central limit theorem and Slutsky's lemma [@vdV98, Example 2.1 and Lemma 2.8], the tests are asymptotically valid as $n'$ goes to infinity.
 
-The next chunk of  code retrieves the $p$-values of the  three tests using all
-1000 synthetic observations.
+The next chunk of code retrieves the $p$-values of the three tests using all 1000 synthetic observations.
 
 ```{r, testing-moments-1}
 (moments_test <- fig$data %>%
@@ -2124,12 +2131,9 @@ The next chunk of  code retrieves the $p$-values of the  three tests using all
    tidyr::unnest(cols = c(`1st_moment_test`, `2nd_moment_test`, `3rd_moment_test`)))
 ```
 	
-The $p$-values  from the  first two  tests are small,  but not  strikingly so,
-especially when accounting for multiple testing.  This indicates only moderate
-evidence of a discrepancy.
+The $p$-values from the first two tests are small, but not strikingly so, especially when accounting for multiple testing.  This indicates only moderate evidence of a discrepancy.
 
-It  is  tempting   to  investigate  what  happens  when   only  100  synthetic
-observations are used. 
+It is tempting to investigate what happens when only 100 synthetic observations are used.
 
 ```{r, testing-moments-1-revisited}
 (tibble::tibble(d = c(kknn::kknn(frml, train, synth %>% dplyr::slice_head(n = 100), k = 1)$D,
@@ -2165,11 +2169,8 @@ observations are used.
    tidyr::unnest(cols = c(`1st_moment_test`, `2nd_moment_test`, `3rd_moment_test`)))
 ```
 
-This time, only the $p$-value from the  third tests is small, but not markedly
-so when  accounting for multiple  testing.  The  evidence of a  discrepancy is
-significantly  weaker when  100 synthetic  observations are  used compared  to
-1000.   This highlights  that distinguishing  $N$ synthetic  observations from
-genuine observations becomes increasingly difficult as $N$ decreases.
+This time, only the $p$-value from the third tests is small, but not markedly so when accounting for multiple testing.  The evidence of a discrepancy is significantly weaker when 100 synthetic observations are used compared to
+1000.   This highlights that distinguishing $N$ synthetic observations from genuine observations becomes increasingly difficult as $N$ decreases.
 
 ### Criterion 2
 
@@ -2205,36 +2206,15 @@ fig <- dplyr::bind_rows(test, synth) %>%
 print(fig)
 ```
 
-Firstly,  inspecting  the first  row  of  @fig-criterion-2 suggests  that  the
-marginal laws  of $W_{1}, W_{2}, W_{3}$  under the synthetic law  do not align
-very well with their counterparts under $P$, although the locations and ranges
-of the true  marginal laws are reasonably well  approximated.  The restriction
-to $\bbR_{+}$ of the  marginal law of $W_{1}$ under the  synthetic law is very
-similar to its counterpart under $P$, but its restriction to $\bbR_{-}$ is too
-thin-tailed.  As for  the marginal laws of $W_{2}, W_{3}$  under the synthetic
-law, they are too thin-tailed compared to their counterparts under $P$.
+Firstly, inspecting the first row of @fig-criterion-2 suggests that the marginal laws of $W_{1}, W_{2}, W_{3}$ under the synthetic law do not align very well with their counterparts under $P$, although the locations and ranges of the true marginal laws are reasonably well approximated.  The restriction to $\bbR_{+}$ of the marginal law of $W_{1}$ under the synthetic law is very similar to its counterpart under $P$, but its restriction to $\bbR_{-}$ is too thin-tailed.  As for the marginal laws of $W_{2}, W_{3}$ under the synthetic law, they are too thin-tailed compared to their counterparts under $P$.
 
-Secondly,  inspecting the  second  row of  @fig-criterion-2  reveals that  the
-marginal  laws of  $V_{1},  V_{2}$  under the  synthetic  law align  perfectly
-($V_{1}$) and  reasonably well  ($V_{2}$) with  their counterparts  under $P$.
-However, the marginal  law of $A$ under the synthetic  law assigns more weight
-to the event $[A=1]$ than its counterpart under $P$.
+Secondly, inspecting the second row of @fig-criterion-2 reveals that the marginal laws of $V_{1}, V_{2}$ under the synthetic law align perfectly ($V_{1}$) and reasonably well ($V_{2}$) with their counterparts under $P$.  However, the marginal law of $A$ under the synthetic law assigns more weight to the event $[A=1]$ than its counterpart under $P$.
 
-Lastly, inspecting the third row of @fig-criterion-2 reveals that the marginal
-law  of  $Y$ under  the  synthetic  law does  not  align  very well  with  its
-counterpart under $P$.  While the location  and range of the true marginal law
-are reasonably well approximated, the overall shape of the true density is not
-faithfully reproduced.
+Lastly, inspecting the third row of @fig-criterion-2 reveals that the marginal law of $Y$ under the synthetic law does not align very well with its counterpart under $P$.  While the location and range of the true marginal law are reasonably well approximated, the overall shape of the true density is not faithfully reproduced.
 
-The next chunk of code implements the version of the second criterion based on
-hypotheses  testing.  Conditionally  on  the training  data  set, the  testing
-procedures  are valid  because (i)  the synthetic  and testing  data sets  are
-independent, (ii) the testing data are drawn independently from $P$, (iii) the
-synthetic data are drawn independently from $\law(\Gen_{\thn}(Z))$.
+The next chunk of code implements the version of the second criterion based on hypotheses testing.  Conditionally on the training data set, the testing procedures are valid because (i) the synthetic and testing data sets are independent, (ii) the testing data are drawn independently from $P$, (iii) the synthetic data are drawn independently from $\law(\Gen_{\thn}(Z))$.
 
-We first address  the continuous covariates ($W_1$, $W_2$, $W_3$  and $Y$) and
-then the binary covariates ($V_{1}$, $V_{2}$ and $A$).  For the former, we use
-Kolmogorov-Smirnov tests.  For the latter, we use exact Fisher tests.
+We first address the continuous covariates ($W_1$, $W_2$, $W_3$ and $Y$) and then the binary covariates ($V_{1}$, $V_{2}$ and $A$).  For the former, we use Kolmogorov-Smirnov tests.  For the latter, we use exact Fisher tests.
 
 ```{r, tests-criterion-2}
 #| message: false
@@ -2260,16 +2240,9 @@ Kolmogorov-Smirnov tests.  For the latter, we use exact Fisher tests.
   tidyr::unnest(cols = p.val))
 ```
 
-Most  $p$-values  are  very  small,  supporting  the  conclusions  drawn  from
-inspecting @fig-criterion-2. Unlike  the marginal laws of  $V_{1}, V_{2}$, the
-marginal laws of $W_{1}, W_{2}, W_{3}, A, Y$ are not well approximated, as the
-tests  detect discrepancies  when both  the  synthetic and  testing data  sets
-contain 1000 data points.
+Most $p$-values are very small, supporting the conclusions drawn from inspecting @fig-criterion-2. Unlike the marginal laws of $V_{1}, V_{2}$, the marginal laws of $W_{1}, W_{2}, W_{3}, A, Y$ are not well approximated, as the tests detect discrepancies when both the synthetic and testing data sets contain 1000 data points.
 
-Naturally, one  might wonder  whether this result  still holds  when comparing
-smaller  synthetic  and  testing  data  sets.  The  following  chunk  of  code
-reproduces the same statistical analysis as  before, but now using two samples
-of 100 data points each.
+Naturally, one might wonder whether this result still holds when comparing smaller synthetic and testing data sets.  The following chunk of code reproduces the same statistical analysis as before, but now using two samples of 100 data points each.
 
 ```{r, tests-criterion-2-revisited}
 #| message: false
@@ -2299,11 +2272,7 @@ smaller_dataset <- fig$data %>%
   tidyr::unnest(cols = p.val))
 ```
 
-This time, the  $p$-values are large, indicating that the  tests cannot detect
-discrepancies when the  synthetic and testing data sets contain  only 100 data
-points.  Surprisingly,  the same conclusion  holds when comparing  a synthetic
-data set of  100 data points with a  testing data set of 1000  data points, as
-demonstrated in the next chunk of code.
+This time, the $p$-values are large, indicating that the tests cannot detect discrepancies when the synthetic and testing data sets contain only 100 data points.  Surprisingly, the same conclusion holds when comparing a synthetic data set of 100 data points with a testing data set of 1000 data points, as demonstrated in the next chunk of code.
 
 
 ```{r, tests-criterion-2-revisited-2}
@@ -2335,20 +2304,11 @@ smaller_synth_dataset <- fig$data %>%
   tidyr::unnest(cols = p.val))
 ```
 
-In conclusion, while a large synthetic data  set can be shown to differ in law
-from a large testing  data set, a smaller synthetic data  set does not exhibit
-noticeable differences in  marginal laws when compared to either  a small or a
-large testing data set.
+In conclusion, while a large synthetic data set can be shown to differ in law from a large testing data set, a smaller synthetic data set does not exhibit noticeable differences in marginal laws when compared to either a small or a large testing data set.
 
 ### Criterion 3
 
-The next chunk of code builds a super learning algorithm to estimate either
-the conditional probability  that $A=1$ given $(W,V)$ or  the conditional mean
-of  $Y$  given  $(A,W,V)$  by  aggregating   5  base  learners.   We  use  the
-`SuperLearner` package in `R`. Specifically,  the 5 base learners estimate the
-above conditional  means by  a constant (`SL.mean`),  or based  on generalized
-linear  models (`SL.glm`  and  `SL.glm.interaction`), or  by  a random  forest
-(`SL.ranger`), or based on a single-hidden-layer neural network (`SL.nnet`).
+The next chunk of code builds a super learning algorithm to estimate either the conditional probability that $A=1$ given $(W,V)$ or the conditional mean of $Y$ given $(A,W,V)$ by aggregating 5 base learners.  We use the `SuperLearner` package in `R`. Specifically, the 5 base learners estimate the above conditional means by a constant (`SL.mean`), or based on generalized linear models (`SL.glm` and `SL.glm.interaction`), or by a random forest (`SL.ranger`), or based on a single-hidden-layer neural network (`SL.nnet`).
 
 ```{r, criterion-3}
 #| message: false
@@ -2372,11 +2332,7 @@ algo <- function(learning_data, testing_data,
 }
 ```
 
-We  train the  super  learning algorithm  three  times: once  on  each of  two
-distinct halves of  the training data set,  and once on half  of the synthetic
-data set.   This results  in three estimators  of the  conditional probability
-that $A=1$ given  $(W,V)$ and three estimators of the  conditional mean of $Y$
-given $(A,W,V)$. The next chunk of code prepares the three training data sets.
+We train the super learning algorithm three times: once on each of two distinct halves of the training data set, and once on half of the synthetic data set.  This results in three estimators of the conditional probability that $A=1$ given $(W,V)$ and three estimators of the conditional mean of $Y$ given $(A,W,V)$. The next chunk of code prepares the three training data sets.
 
 ```{r, super-learning-three-times}
 (tib <- dplyr::bind_rows(train, test, synth) %>%
@@ -2399,31 +2355,11 @@ given $(A,W,V)$. The next chunk of code prepares the three training data sets.
      dplyr::filter(type != "testing data"))
 ```
 
-The following chunk of code trains  the super learning algorithm and evaluates
-the  six resulting  estimators on  the testing  data points.   To compare  the
-estimators,  we  use  scatter  plots.   Specifically,  denoting  by  $\pr_{1},
-\pr_{2}, \pr_{3}$  the estimators  of the  conditional probability  that $A=1$
-given $(W,V)$ obtained by training the super learning algorithm on each of the
-two distinct halves of the training data set ($\pr_{1}$ and $\pr_{2}$), and on
-half of  the synthetic  data set  ($\pr_{3}$), we plot  in the  left-hand side
-panel $\{(\pr_{1}(W_{n+i},V_{n+i}), \pr_{2}(W_{n+i},V_{n+i})) :  1 \leq i \leq
-n\}$ (in red) and  $\{(\pr_{1}(W_{n+i},V_{n+i}), \pr_{3}(W_{n+i},V_{n+i})) : 1
-\leq i \leq n\}$ (in blue). 
+The following chunk of code trains the super learning algorithm and evaluates the six resulting estimators on the testing data points.  To compare the estimators, we use scatter plots.  Specifically, denoting by $\pr_{1}, \pr_{2}, \pr_{3}$ the estimators of the conditional probability that $A=1$ given $(W,V)$ obtained by training the super learning algorithm on each of the two distinct halves of the training data set ($\pr_{1}$ and $\pr_{2}$), and on half of the synthetic data set ($\pr_{3}$), we plot in the left-hand side panel $\{(\pr_{1}(W_{n+i},V_{n+i}), \pr_{2}(W_{n+i},V_{n+i})) : 1 \leq i \leq n\}$ (in red) and $\{(\pr_{1}(W_{n+i},V_{n+i}), \pr_{3}(W_{n+i},V_{n+i})) : 1 \leq i \leq n\}$ (in blue).
 
-Therein,  the spread  of the  red scatter  plot along  the $y=x$  line in  the
-$xy$-plane is an evidence of the  inherent and irreducible randomness that one
-faces when one learns the conditional probability that $A=1$ given $(W,V)$. By
-comparison,  the blue  scatter plot  is more  widely spread  around the  line,
-revealing a measure of discrepancy between the training and synthetic data.
+Therein, the spread of the red scatter plot along the $y=x$ line in the $xy$-plane is an evidence of the inherent and irreducible randomness that one faces when one learns the conditional probability that $A=1$ given $(W,V)$. By comparison, the blue scatter plot is more widely spread around the line, revealing a measure of discrepancy between the training and synthetic data.
 
-The right-hand  side panel is obtained  analogously.  The red scatter  plot is
-more concentrated around the $y=x$ line  than its counterpart in the left-hand
-side panel.   The blue scatter  plot is more widely  spread than the  red one,
-which  again  reveals  a  measure  of discrepancy  between  the  training  and
-synthetic data. In summary, we consider that the red and blue scatter plots do
-not strongly differ  in their bulks.  However, it seems  that the blue scatter
-plots feature  more outliers than  their red counterparts, revealing  that the
-estimators may be quite different in some parts of the space of covariates.
+The right-hand side panel is obtained analogously.  The red scatter plot is more concentrated around the $y=x$ line than its counterpart in the left-hand side panel.  The blue scatter plot is more widely spread than the red one, which again reveals a measure of discrepancy between the training and synthetic data. In summary, we consider that the red and blue scatter plots do not strongly differ in their bulks.  However, it seems that the blue scatter plots feature more outliers than their red counterparts, revealing that the estimators may be quite different in some parts of the space of covariates.
 
 
 
@@ -2477,46 +2413,26 @@ on synthetic data set (blue)")
 ### Summary
 
 
-We implement three criteria to evaluate the synthetic observations.  The first
-criterion  compared  empirical  distributions  of  distances  between  genuine
-observations, both involved and not  involved in the generator's construction,
-and synthetic observations, detecting  minor over-replication in the synthetic
-data set.  The second criterion  assessed marginal distributions of individual
-features, revealing discrepancies, particularly in continuous variables, which
-often exhibited overly  thin tails.  The third  criterion compared predictions
-from an  algorithm trained on  synthetic versus genuine  observations, showing
-good replication for predicting $Y$ given $(A,W,V)$ but less so for predicting
-$A$  given  $(W,V)$.  Overall,  while  the  synthetic observations  show  some
-discrepancies  from  the  genuine  ones,  these  differences  are  not  overly
-substantial. Moreover,  detecting significant differences becomes  much harder
-with smaller synthetic datasets (100 versus 1000 synthetic observations).
+We implement three criteria to evaluate the synthetic observations.  The first criterion compared empirical distributions of distances between genuine observations, both involved and not involved in the generator's construction, and synthetic observations, detecting minor over-replication in the synthetic data set.  The second criterion assessed marginal distributions of individual features, revealing discrepancies, particularly in continuous variables, which often exhibited overly thin tails.  The third criterion compared predictions from an algorithm trained on synthetic versus genuine observations, showing good replication for predicting $Y$ given $(A,W,V)$ but less so for predicting $A$ given $(W,V)$.  Overall, while the synthetic observations show some discrepancies from the genuine ones, these differences are not overly substantial. Moreover, detecting significant differences becomes much harder with smaller synthetic datasets (100 versus 1000 synthetic observations).
 
 
 # Illustration on real data {#sec-IWPC}
 
-In this section,  we extend the analysis conducted in  the previous section to
-real data.   We use  a subset of  the International  Warfarin Pharmacogenetics
-Consortium   [IWPC   data  set](https://www.pharmgkb.org/downloads)   [@IWPC].
-Warfarin  therapy is  a commonly  prescribed anticoagulant  employed to  treat
-thrombosis and thromboembolism.
+In this section, we extend the analysis conducted in the previous section to real data.  We use a subset of the International Warfarin Pharmacogenetics Consortium [IWPC data set](https://www.pharmgkb.org/downloads) [@IWPC].  Warfarin therapy is a commonly prescribed anticoagulant employed to treat thrombosis and thromboembolism.
 
 
 ## The International Warfarin Pharmacogenetics Consortium data set {#sec-pres-IWPC}
 
 
-In order to limit the number of incomplete observations, we keep only the
-following variables: 
+In order to limit the number of incomplete observations, we keep only the following variables:
 
 * height, in centimeters;
 * weight, in kilograms;
 * indicator of whether or not VKORC1 consensus (obtained from genotype data) is "A/A";
-* indicator of whether or not CYP2C9 consensus (obtained from genotype data) is
-  "\*1/\*1";
+* indicator of whether or not CYP2C9 consensus (obtained from genotype data) is "\*1/\*1";
 * indicator of whether or not ethnicity is Asian;
-* indicator of whether or not therapeutic  dose of Warfarin is greater than or
-  equal to 21 mg;
-*  international normalized  ratio on  reported therapeutic  dose of  Warfarin
-  (INR, a measure of blood clotting function). 
+* indicator of whether or not therapeutic dose of Warfarin is greater than or equal to 21 mg;
+*  international normalized ratio on reported therapeutic dose of Warfarin (INR, a measure of blood clotting function).
 
 ```{r, load-IWPC-data}
 #| message: false
@@ -2531,9 +2447,7 @@ dataset <- readr::read_csv("data/IWPC_data.csv",
                                          "A", "Y"))
 ```
 
-The  original  database  includes  `r nrow(dataset)`  patients  with  complete
-observations for  these variables.  We  refer to the  table below for  a brief
-description of the data.
+The original database includes `r nrow(dataset)` patients with complete observations for these variables.  We refer to the table below for a brief description of the data, and emphasize that $A$ does precede $Y$.
 
 ```{r, tab-descriptive-statistics-IWPC-data}
 #| label: tbl-descriptive-statistics-IWPC-data
@@ -2638,6 +2552,7 @@ print("The three first observations in 'train':\n",
 ## Training the VAE {#sec-training-VAE-IWPC}
 
 By running the next chunk of code, we set the VAE's configuration.
+
 ```{python, vae-training-IWPC-preliminary}
 latent_dim = 10
 L = 8
@@ -2655,77 +2570,76 @@ nlayers_AYaY_decoder = 2
 nneurons_AYaY_decoder = 16
 ```
 
-The next chunk of code repeatedly  generates and initializes a VAE then trains
-it. 
+The next chunk of code repeatedly generates and initializes a VAE then trains it.
 
 ```{python, vae-training-IWPC}
 #| eval: false
-epochs = 40
-batch_size = np.round(0.2 * np.shape(train)[0]).astype(int)
-synth_size = 1000
-nb_tries = 100
-for i in range(nb_tries):
-  print("try #", i, ", ")
-  encoder = build_encoder(dimW = dimW,
-                          dimV = dimV,
-                          latent_dim = latent_dim,
-                          L = L,
-                          nlayers_encoder = nlayers_encoder,
-                          nneurons_encoder = nneurons_encoder)
-  WV_decoder = build_WV_decoder(dimW = dimW,
+  epochs = 40
+  batch_size = np.round(0.2 * np.shape(train)[0]).astype(int)
+  synth_size = 1000
+  nb_tries = 100
+  for i in range(nb_tries):
+    print("try #", i, ", ")
+    encoder = build_encoder(dimW = dimW,
+                            dimV = dimV,
+                            latent_dim = latent_dim,
+                            L = L,
+                            nlayers_encoder = nlayers_encoder,
+                            nneurons_encoder = nneurons_encoder)
+    WV_decoder = build_WV_decoder(dimW = dimW,
+                                  dimV = dimV,
+                                  nb_cat_V = nb_cat_V,
+                                  latent_dim = latent_dim,
+                                  L = L,
+                                  nlayers_WV_decoder = nlayers_WV_decoder,
+                                  nneurons_WV_decoder = nneurons_WV_decoder,
+                                  activation_W = "sigmoid")
+    Alaw_decoder = build_Alaw_decoder(dimW = dimW,
+                                      dimV = dimV,
+                                      L = L,
+                                      nlayers_Alaw_decoder = nlayers_Alaw_decoder,
+                                      nneurons_Alaw_decoder = nneurons_Alaw_decoder)
+    AYaY_decoder = build_AYaY_decoder(dimW = dimW,
+                                      dimV = dimV,
+                                      latent_dim = latent_dim,
+                                      L = L,
+                                      nlayers_AYaY_decoder = nlayers_AYaY_decoder,
+                                      nneurons_AYaY_decoder = nneurons_AYaY_decoder,
+                                      activation_Ya = "sigmoid")
+    pi = build_pi(dimW = dimW,
+                  dimV = dimV,
+                  L = L)
+    extract_G = build_extract_G(dimW = dimW,
                                 dimV = dimV,
-                                nb_cat_V = nb_cat_V,
+                                L = L)
+    generator = build_generator(dimW = dimW,
+                                dimV = dimV,
+                                encoder = encoder,
                                 latent_dim = latent_dim,
                                 L = L,
-                                nlayers_WV_decoder = nlayers_WV_decoder,
-                                nneurons_WV_decoder = nneurons_WV_decoder,
-                                activation_W = "sigmoid")
-  Alaw_decoder = build_Alaw_decoder(dimW = dimW,
-                                    dimV = dimV,
-                                    L = L,
-                                    nlayers_Alaw_decoder = nlayers_Alaw_decoder,
-                                    nneurons_Alaw_decoder = nneurons_Alaw_decoder)
-  AYaY_decoder = build_AYaY_decoder(dimW = dimW,
-                                    dimV = dimV,
-                                    latent_dim = latent_dim,
-                                    L = L,
-                                    nlayers_AYaY_decoder = nlayers_AYaY_decoder,
-                                    nneurons_AYaY_decoder = nneurons_AYaY_decoder,
-                                    activation_Ya = "sigmoid")
-  pi = build_pi(dimW = dimW,
-                dimV = dimV,
-                L = L)
-  extract_G = build_extract_G(dimW = dimW,
-                              dimV = dimV,
-                              L = L)
-  generator = build_generator(dimW = dimW,
-                              dimV = dimV,
-                              encoder = encoder,
-                              latent_dim = latent_dim,
-                              L = L,
-                              WV_decoder = WV_decoder,
-                              Alaw_decoder = Alaw_decoder,
-                              AYaY_decoder = AYaY_decoder,
-                              pi = pi,
-                              extract_G = extract_G)
-  vae = VAE(generator = generator,
-            latent_dim = latent_dim,
-            L = L,
-            optimizer = optimizer)
-  vae.train(data_train = train,
-            epochs = epochs,
-            batch_size = batch_size)
-  random_sample = np.random.choice(n_train, synth_size, replace = True)
-  O_test = train[random_sample, :]
-  alea = np.random.normal(loc = 0, scale = 1, size = (synth_size, L, latent_dim + dimV + 1))
-  synth = vae.generator.predict([O_test, alea])[1]
+                                WV_decoder = WV_decoder,
+                                Alaw_decoder = Alaw_decoder,
+                                AYaY_decoder = AYaY_decoder,
+                                pi = pi,
+                                extract_G = extract_G)
+    vae = VAE(generator = generator,
+              latent_dim = latent_dim,
+              L = L,
+              optimizer = optimizer)
+    vae.train(data_train = train,
+              epochs = epochs,
+              batch_size = batch_size)
+    random_sample = np.random.choice(n_train, synth_size, replace = True)
+    O_test = train[random_sample, :]
+    alea = np.random.normal(loc = 0, scale = 1, size = (synth_size, L, latent_dim + dimV + 1))
+    synth = vae.generator.predict([O_test, alea])[1]
 
-  synth = synth[:, 0, :]
-  synth[:, 0:2] = scalerW.inverse_transform(synth[:, 0:2])
-  synth[:, dimWV + 1]\
-    = scalerY.inverse_transform(synth[:, dimWV + 1].reshape(-1, 1)).reshape(1,-1)
-  synth[:, 2:5] = np.round(synth[:, 2:5])
-  np.savetxt("IWPC-synth_try#" + str(i) + ".csv", synth, delimiter = ",") 
+    synth = synth[:, 0, :]
+    synth[:, 0:2] = scalerW.inverse_transform(synth[:, 0:2])
+    synth[:, dimWV + 1]\
+      = scalerY.inverse_transform(synth[:, dimWV + 1].reshape(-1, 1)).reshape(1,-1)
+    synth[:, 2:5] = np.round(synth[:, 2:5])
+    np.savetxt("IWPC-synth_try#" + str(i) + ".csv", synth, delimiter = ",") 
 ```
 Because running the chunk is time-consuming, we stored one trained VAE that we
 considered  good enough.  We now  turn to  its evaluation  based on  the three
@@ -3174,10 +3088,12 @@ With  the emergence  of  neural  networks, numerous  studies  have focused  on
 generating synthetic  data across  diverse fields, including  image generation
 [@yi_2019],  video  synthesis  [@vondrick_2016], natural  language  processing
 [@lee_2018],  and   healthcare  [@che_2017],   [@choi_2017],  [@baowaly_2018],
-[@lee_2018],   [@yi_2019].   Most   of  these   studies  employed   Generative
-Adversarial   Networks  (GANs,   @goodfellow_generative_2014),  for   instance
-[@creswell_2017], [@gui_2020], [@aggarwal_2021], [@figueira_2022], though VAEs
-and their extensions were also used.
+[@lee_2018], [@yi_2019]. Most of these studies employed Generative Adversarial
+Networks  (GANs,  @goodfellow_generative_2014),  as  seen  in  works  such  as
+[@creswell_2017],  [@gui_2020],  [@aggarwal_2021], [@figueira_2022].  However,
+VAEs  and their  extensions,  as  well as  techniques  like normalizing  flows
+[@rezende_2015] and nonequilibrium thermodynamics [@dickstein_2015], were also
+utilized.
 
 For instance, @xu_2019 proposed the Conditional Tabular GAN (CTGAN) to address
 challenges  specific  to  tabular  data,  such as  the  mix  of  discrete  and
@@ -3235,9 +3151,9 @@ with the marginal  law of $A$. However, their decomposition  of the likelihood
 differs from ours.
 
 Naturally,  researchers  have  also  focused  on  evaluating  the  quality  of
-synthetic   data.    For   instance,   @alaa_2022   proposed   three   metrics
+synthetic  data.    For  instance,  @ahmedalaa_2022  proposed   three  metrics
 ($\alpha$-precision,  $\beta$-recall, authenticity)  to  assess the  fidelity,
-diversity, and generalization  performance of data generators.  In their work,
+diversity, and generalization performance of  data generators.  In their work,
 each sample is individually classified as either high-quality or low-quality.
 
 To conclude,  @lu_2024 provided a  comprehensive systematic review  of studies
@@ -3246,21 +3162,46 @@ valuable synthesis of the field's progress and challenges.
 
 ## Challenges and limitations
 
+The question  of what volume  of data is required  is important. It  is widely
+accepted  that  "the more  data,  the  better."   However, this  simple  adage
+overlooks the need to explicitly link the required data volume to both (i) the
+size and complexity of  the input data, and (ii) the  complexity of the neural
+network being fitted.  In  this study, we chose to (i)  simulate five times as
+many genuine observations as the number  of observations in the IWPC real data
+example,  and (ii)  build neural  networks  of comparable  complexity in  both
+illustrations (see  @sec-sim-data, @sec-IWPC).   When testing our  approach to
+building a  simulator on simulated data,  we found that increasing  the sample
+size  of  the  genuine  observations  by two-  to  threefold,  and  moderately
+augmenting the  complexity of the neural  network (e.g., by adding  one or two
+more  layers to  the  encoder and  each  component of  the  decoder and/or  by
+doubling the  number of neurons  in each layer),  did not lead  to significant
+changes in the quality of the results.
 
-The  results of  our  study, while  informative,  are somewhat  disappointing.
-Increasing  the quantity  of genuine  data substantially  did not  improve the
-simulator's performance in  this context. This is in stark  contrast to fields
-like image generation, where the  abundance of inherent regularities in visual
-patterns enables  models to  learn effectively from  larger datasets.   In our
-case, the limited improvement may stem from a lack of rich regularities in the
-genuine data, which  constrains the simulator's ability  to capture meaningful
-structures.
+The  choice  of  architecture  is,  in a  sense,  a  meta-hyperparameter.   In
+addition,  several  other  hyperparameters  must   be  selected  by  the  data
+scientist, including  the number of layers,  the number of neurons  per layer,
+$\beta$,  and the  parameters used  in Algorithm  1.  It  is certain  that the
+architecture can  be improved on  a case-by-case basis.  The  data scientist's
+task  could  benefit  from  input  from domain  experts.   As  for  the  other
+hyperparameters,  we do  not claim  that  our choices  are optimal.   However,
+selecting appropriate optimality criteria and  optimizing the choices based on
+them are challenging tasks.
 
-Another challenge  lies in the  question of  sharing the simulator.   While it
-would be  appealing to make  the simulator  widely available, doing  so raises
-concerns about  the genuine data  required to  run the code.   This dependency
-could potentially compromise  the privacy or utility of  the original dataset,
-creating additional barriers to adoption.
+The results of  our study, while informative, are  somewhat disappointing.  As
+reported in  the first paragraph of  this section, increasing the  quantity of
+genuine data substantially did not improve the simulator's performance in this
+context. This is in stark contrast  to fields like image generation, where the
+abundance of inherent regularities in  visual patterns enables models to learn
+effectively from  larger datasets.  In  our case, the limited  improvement may
+stem from  a lack of rich  regularities in the genuine  data, which constrains
+the simulator's ability to capture meaningful structures.
+
+Another challenge  lies in the question  of sharing of sharing  the simulator,
+which  has implications  for privacy-preserving  analytics.  While  making the
+simulator widely  available would be  appealing, it raises concerns  about the
+genuine  data required  to run  the  code. This  dependency could  potentially
+compromise the privacy or utility of the original dataset, creating additional
+barriers to adoption.
 
 It is also  worth noting that we deliberately neutralized  in this article the
 VAE's  repeated  training   from  random  initializations  due   to  the  high
@@ -3270,12 +3211,35 @@ trade-off  between feasibility  and  the potential  benefits  of repeated  and
 extended  training  cycles,  which  might otherwise  improve  the  simulator's
 performance.
 
-Looking ahead, addressing some of these limitations requires practical and
+Looking ahead,  addressing some  of these  limitations requires  practical and
 theoretical advances. For instance, future  efforts could focus on effectively
 handling    missing     data    (NA    values)    within     the    simulation
 framework. Additionally, establishing general  design principles for simulator
 architectures could improve their robustness and adaptability across a variety
-of datasets and applications.
+of datasets  and applications.  The  potential relevance  of our study  in the
+context of simulation-based inference in Bayesian computation presents another
+promising avenue for future work.
+
+::: {.callout-note appearance="simple"}
+## Take-home message
+We highlighted key considerations in  designing and testing simulators. First,
+we emphasized  that simply increasing  the volume  of data does  not guarantee
+improved  simulator   performance,  especially   when  the  data   lacks  rich
+regularities.  We  also discussed  the  complexities  of composing  the  right
+architecture for the neural  network and selecting appropriate hyperparameters
+to train  it. Although  it is  tempting to  rely on  larger datasets  and more
+complex  models,  increasing the  data  size  or  network complexity  did  not
+significantly  improve   the  results.  Additionally,  we   touched  upon  the
+challenges   of   sharing  simulators,   particularly   in   the  context   of
+privacy-preserving  analytics,  where  data  dependencies  may  raise  privacy
+concerns. We also noted the computational burden of training, which limits the
+feasibility  of  repeated  training   cycles.   Finally,  while  our  approach
+addresses some  of these challenges,  future efforts should focus  on handling
+missing   data,  developing   universal   design   principles  for   simulator
+architectures,  and exploring  the potential  relevance  of our  study in  the
+context of simulation-based inference in Bayesian computation.
+:::
+
 
 ## Closing reflection
 

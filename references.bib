@@ -797,7 +797,7 @@ optabstract = {When researchers develop new econometric methods it is common pra
 }
 
 
-@misc{alaa_2022,
+@misc{ahmedalaa_2022,
       title={{How Faithful is your Synthetic Data? Sample-level Metrics for Evaluating and Auditing Generative Models}}, 
       author={Ahmed M. Alaa and Boris van Breugel and Evgeny Saveliev and Mihaela van der Schaar},
       year={2022},
@@ -815,4 +815,78 @@ optabstract = {When researchers develop new econometric methods it is common pra
       archivePrefix={arXiv},
       primaryClass={stat.OT},
       url={https://arxiv.org/abs/2501.17719}, 
+}
+
+
+@InProceedings{rezende_2015,
+title={Variational Inference with Normalizing Flows}, 
+author={Rezende, Danilo and Mohamed, Shakir},
+booktitle={Proceedings of  the 32nd International Conference on Machine Learning},
+pages={1530--1538},
+year={2015},
+editor={Bach, Francis and Blei, David},
+volume={37},
+series={Proceedings   of  Machine   Learning  Research},
+address={Lille,  France},
+month={07--09  Jul},
+publisher={PMLR},
+optpdf={http://proceedings.mlr.press/v37/rezende15.pdf},
+opturl={https://proceedings.mlr.press/v37/rezende15.html},
+optabstract={The choice  of the approximate  posterior distribution is  one of
+                  the   core   problems   in  variational   inference.    Most
+                  applications of variational inference employ simple families
+                  of posterior approximations in  order to allow for efficient
+                  inference, focusing on mean-field or other simple structured
+                  approximations. This restriction has a significant impact on
+                  the quality of inferences made using variational methods. We
+                  introduce   a   new   approach  for   specifying   flexible,
+                  arbitrarily  complex  and   scalable  approximate  posterior
+                  distributions.    Our   approximations   are   distributions
+                  constructed  through a  normalizing flow,  whereby a  simple
+                  initial density  is transformed into  a more complex  one by
+                  applying a  sequence of  invertible transformations  until a
+                  desired level of complexity is attained. We use this view of
+                  normalizing  flows  to  develop  categories  of  finite  and
+                  infinitesimal flows and provide a unified view of approaches
+                  for   constructing   rich  posterior   approximations.    We
+                  demonstrate  that  the   theoretical  advantages  of  having
+                  posteriors that  better match  the true  posterior, combined
+                  with  the scalability  of amortized  variational approaches,
+                  provides   a   clear    improvement   in   performance   and
+                  applicability of variational inference.}
+}
+  
+
+@InProceedings{dickstein_2015,
+title = 	 {Deep Unsupervised Learning using Nonequilibrium Thermodynamics},
+author = 	 {Sohl-Dickstein, Jascha and Weiss, Eric and Maheswaranathan, Niru and Ganguli, Surya},
+booktitle = 	 {Proceedings of the 32nd International Conference on Machine Learning},
+pages = 	 {2256--2265},
+year = 	 {2015},
+editor = 	 {Bach, Francis and Blei, David},
+volume = 	 {37},
+series = 	 {Proceedings of Machine Learning Research},
+address = 	 {Lille, France},
+month = 	 {07--09 Jul},
+publisher =    {PMLR},
+optpdf = 	 {http://proceedings.mlr.press/v37/sohl-dickstein15.pdf},
+opturl = 	 {https://proceedings.mlr.press/v37/sohl-dickstein15.html},
+optabstract  = 	  {A central  problem in  machine learning  involves modeling
+                  complex   data-sets  using   highly  flexible   families  of
+                  probability  distributions  in   which  learning,  sampling,
+                  inference,   and  evaluation   are  still   analytically  or
+                  computationally tractable. Here, we develop an approach that
+                  simultaneously     achieves     both     flexibility     and
+                  tractability.    The    essential    idea,    inspired    by
+                  non-equilibrium  statistical physics,  is to  systematically
+                  and slowly destroy structure  in a data distribution through
+                  an  iterative forward  diffusion  process. We  then learn  a
+                  reverse diffusion  process that restores structure  in data,
+                  yielding a highly flexible and tractable generative model of
+                  the data. This  approach allows us to  rapidly learn, sample
+                  from, and  evaluate probabilities in deep  generative models
+                  with  thousands of  layers  or  time steps,  as  well as  to
+                  compute  conditional and  posterior probabilities  under the
+                  learned  model.  We  additionally  release  an  open  source
+                  reference implementation of the algorithm.}
 }
