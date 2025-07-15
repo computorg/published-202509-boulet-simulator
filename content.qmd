@@ -1152,7 +1152,7 @@ approximately $p$  and a small  neighborhood of $0$ having  mass approximately
 $(1-p)$.   For   instance  @fig-approximately-bernoulli  shows   the  empirical
 cumulative  distribution function  of 1000  independent copies  of the  random
 variable defined in @eq-approximately-bernoulli with $\beta=30$ and $p=1/3$: 
-```{r approximate-bernoulli}
+```{r fig-approximate-bernoulli}
 #| label: fig-approximately-bernoulli
 #| fig-cap: Empirical c.d.f.  of 1000  independent copies  of the  random variable defined in @eq-approximately-bernoulli with $\beta=30$ and $p=1/3$. The law is close the Bernoulli law with parameter $\tfrac{1}{3}$. 
 #| message: false
@@ -2079,12 +2079,11 @@ $\law(\Gen_{\thn}(Z))$;
 $f^{\sharp}(O_{i})$ of $O_{i}$ among $\Os_{1}$, $\ldots$, $\Os_{N}$.
 
 :::{#fig-DAG}
-
-
-
 ![](figures/DAG.jpg){height=400}
 
-DAG representing how the random variables produced by $\Pi$ depend on each other.  :::
+DAG representing  how the random  variables produced  by $\Pi$ depend  on each
+other. 
+:::
 
 The DAG is very useful to unravel how the random variables produced by $\Pi$ depend on each other.  In particular, by $d$-separation [@Lauritzen], we learn from the DAG that the distances to the nearest neighbor within $\{\Os_{1}, \ldots, \Os_{N}\}$ of $O_{1}$, $\ldots$, $O_{n+n'}$ are dependent pairwise.  This dependency prevents the use of a Kolmogorov-Smirnov test to compare $\mu_{1:n}$ and $\mu_{(n+1):(n+n')}$.
 
