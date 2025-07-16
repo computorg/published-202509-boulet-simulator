@@ -671,7 +671,7 @@ $${#eq-LB}
 where $\KL$ denotes the Kullback-Leibler divergence and $U$ in the expectation
 is  drawn  from  the  conditional law  with  density  $g_{\theta_{1}}(\cdot  |
 O_{i})$. The  notation $\LB$ is  used to indicate  that it represents  a lower
-bound.  Thus, the  likelihood of  $O^{1:n}$ under  $\theta_{2} \in  \Theta$ is
+bound.  Thus, the likelihood of $O^{1:n}$ under $\theta_{2} \in \Theta_{2}$ is 
 lower-bounded by
 
 $$
@@ -1902,9 +1902,9 @@ for i in range(nb_tries):
   np.savetxt("synth_try#" + str(i) + ".csv", synth[:, 0, :], delimiter = ",")
 ```
 
-Because running the chunk is time-consuming, we stored one trained VAE that we
-considered good  enough. We explain  what we mean by  good enough in  the next
-section. 
+Because running  the chunk is time-consuming  (about 10 minutes on  a standard
+laptop), we stored one trained VAE  that we considered good enough. We explain
+what we mean by good enough in the next section.
 
 ## A formal view on how to evaluate the quality of the generator {#sec-eval-quality}
 
@@ -3195,12 +3195,12 @@ effectively from  larger datasets.  In  our case, the limited  improvement may
 stem from  a lack of rich  regularities in the genuine  data, which constrains
 the simulator's ability to capture meaningful structures.
 
-Another challenge  lies in the question  of sharing of sharing  the simulator,
-which  has implications  for privacy-preserving  analytics.  While  making the
-simulator widely  available would be  appealing, it raises concerns  about the
-genuine  data required  to run  the  code. This  dependency could  potentially
-compromise the privacy or utility of the original dataset, creating additional
-barriers to adoption.
+Another challenge  lies in the  question of  sharing the simulator,  which has
+implications  for privacy-preserving  analytics.  While  making the  simulator
+widely available would be appealing, it raises concerns about the genuine data
+required to  run the  code. This dependency  could potentially  compromise the
+privacy or  utility of the  original dataset, creating additional  barriers to
+adoption.
 
 It is also  worth noting that we deliberately neutralized  in this article the
 VAE's  repeated  training   from  random  initializations  due   to  the  high
@@ -3215,28 +3215,31 @@ theoretical advances. For instance, future  efforts could focus on effectively
 handling    missing     data    (NA    values)    within     the    simulation
 framework. Additionally, establishing general  design principles for simulator
 architectures could improve their robustness and adaptability across a variety
-of datasets  and applications.  The  potential relevance  of our study  in the
-context of simulation-based inference in Bayesian computation presents another
-promising avenue for future work.
+of  datasets  and   applications.   Moreover,  it  would   be  interesting  to
+investigate how the  notion of energy scores of @gneiting_2007  may be used to
+develop new  criteria to  evaluate a  generator's performance.   The potential
+relevance  of  our study  in  the  context  of simulation-based  inference  in
+Bayesian computation presents another promising avenue for future work.
 
 ::: {.callout-note appearance="simple"}
 ## Take-home message
 We highlighted key considerations in  designing and testing simulators. First,
 we emphasized  that simply increasing  the volume  of data does  not guarantee
 improved  simulator   performance,  especially   when  the  data   lacks  rich
-regularities.  We  also discussed  the  complexities  of composing  the  right
+regularities.   We also  discussed  the complexities  of  composing the  right
 architecture for the neural  network and selecting appropriate hyperparameters
 to train  it. Although  it is  tempting to  rely on  larger datasets  and more
 complex  models,  increasing the  data  size  or  network complexity  did  not
-significantly  improve   the  results.  Additionally,  we   touched  upon  the
+significantly  improve  the  results.    Additionally,  we  touched  upon  the
 challenges   of   sharing  simulators,   particularly   in   the  context   of
 privacy-preserving  analytics,  where  data  dependencies  may  raise  privacy
 concerns. We also noted the computational burden of training, which limits the
 feasibility  of  repeated  training   cycles.   Finally,  while  our  approach
 addresses some  of these challenges,  future efforts should focus  on handling
 missing   data,  developing   universal   design   principles  for   simulator
-architectures,  and exploring  the potential  relevance  of our  study in  the
-context of simulation-based inference in Bayesian computation.
+architectures,  elaborating new  criteria  of a  generator's performance,  and
+exploring  the   potential  relevance   of  our  study   in  the   context  of
+simulation-based inference in Bayesian computation.
 :::
 
 
