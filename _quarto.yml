@@ -1,38 +1,41 @@
-number-sections: true
-format:
-  html:
-    page-layout: article
-    include-in-header: includes/pseudocode-header.html
-    include-after-body: includes/pseudocode-footer.html
-    date-format: long
-    toc-title: >
-      <a href="https://computo.sfds.asso.fr"><img style="width: 96px;" alt="Computo" src="https://computo.sfds.asso.fr/assets/img/logo_text_vertical.svg"/></a> <br/><br/>
-      Contents
-    toc: true
-    theme: cosmo
-    license: "CC BY"
-    title-block-banner: "#034E79"
-    title-block-banner-color: "#FFFFFF"
-    hover-citations: true
-    hover-footnotes: true
-    highlight-style: github
-    code-block-background: true
-    code-block-border-left: "#034E79"
-    code-tools:
-      source: true
-      toggle: false
-      caption: "source"
-    code-copy: true
-    code-summary: "Show the code"
-    code-fold: true
-    anchor-sections: true
-    link-external-icon: false
-    link-external-newwindow: true
-    html-math-method: katex
-    self-contained: true
-    css: more_style.css
-crossref:
-  sec-prefix: Section
-  eq-prefix: Equation
-  fig-prefix: Figure   
-  tbl-prefix: Table
+project:
+  render:
+    - published-202509-boulet-simulator.qmd
+  
+  title: "Draw Me a Simulator"
+  subtitle: "Using neural networks to build more realistic simulation schemes for causal analysis"
+  author:
+  - name: Sandrine Boulet
+    corresponding: true
+    email: sandrine.boulet@inria.fr
+    url: https://bouletsandrine.wixsite.com/website
+    affiliations:
+      - name: Inserm, Université Paris Cité, Inria, department: HeKA, UMRS 1346, F-75015 Paris, France
+  - name: Antoine Chambaz
+    email: antoine.chambaz@u-paris.fr
+    url: https://helios2.mi.parisdescartes.fr/~chambaz/
+    orcid: 0000-0002-5592-6471
+    affiliations:
+      - name: Université Paris Cité, CNRS, MAP5, F-75006 Paris, France
+  date: 09-08-2025
+  date-modified: last-modified
+  description: |
+    This study explores the use of Variational Auto-Encoders to construct simulators approximating the law of genuine observations, emphasizing the challenges of evaluating their quality through statistical and predictive comparisons.
+  abstract: >+
+    This study investigates the use of Variational Auto-Encoders to build a simulator that approximates the law of genuine observations.  Using both simulated and real data in scenarios involving counterfactuality, we discuss the general task of evaluating a simulator's quality, with a focus on comparisons of statistical properties and predictive performance.  While the simulator built from simulated data shows minor discrepancies, the results with real data reveal more substantial challenges.  Beyond the technical analysis, we reflect on the broader implications of simulator design, and consider its role in modeling reality.
+  keywords: [simulations, variational auto-encoders, counterfactuals]
+  citation:
+    type: article-journal
+    container-title: "Computo"
+    doi: "xxxx"
+    publisher: "French Statistical Society"
+    issn: "2824-7795"
+  bibliography: references.bib
+  google-scholar: true
+  github-user: computorg
+  repo: published-202509-boulet-simulator
+  draft: true # set to false once the build is running
+  published: false # will be set to true once accepted
+  format:
+    computo-html: default
+    computo-pdf: default
