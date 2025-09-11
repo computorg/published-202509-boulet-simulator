@@ -1105,7 +1105,7 @@ approximately $p$  and a small  neighborhood of $0$ having  mass approximately
 $(1-p)$.   For   instance  @fig-approximately-bernoulli  shows   the  empirical
 cumulative  distribution function  of 1000  independent copies  of the  random
 variable defined in @eq-approximately-bernoulli with $\beta=30$ and $p=1/3$: 
-```{r fig-approximate-bernoulli}
+```{r}
 #| label: fig-approximately-bernoulli
 #| fig-cap: Empirical c.d.f.  of 1000  independent copies  of the  random variable defined in @eq-approximately-bernoulli with $\beta=30$ and $p=1/3$. The law is close the Bernoulli law with parameter $\tfrac{1}{3}$. 
 #| message: false
@@ -1995,7 +1995,7 @@ synth <- readr::read_csv("data/synth_try#77.csv",
 
 The next chunk of code implements the first criterion.
 
-```{r, fig-criterion-1}
+```{r}
 #| label: fig-criterion-1
 #| fig-cap: Empirical c.d.f. of the distance to the nearest neighbor within the synthetic observations of the training and of the testing data points (logarithmic scale). The two c.d.f. are quite close.
 #| message: false
@@ -2128,7 +2128,7 @@ This time, only the $p$-value from the third tests is small, but not markedly so
 
 The next chunk of code implements the second criterion, in its visual form.
 
-```{r, fig-criterion-2}
+```{r}
 #| label: fig-criterion-2
 #| fig-cap: Empirical c.d.f. of each covariate based on either the synthetic or the testing data sets.
 #| message: false
@@ -2315,7 +2315,7 @@ The right-hand side panel is obtained analogously.  The red scatter plot is more
 
 
 
-```{r, fig-criterion-3}
+```{r}
 #| label: fig-criterion-3
 #| fig-cap: Comparing predicted conditional probabilities that $A=1$ given $(W,V)$ (left) or predicted conditional means of $Y$ given $(A,W,V)$ (right) when a super learning algorithm is trained twice on two distinct halves of the training data set (red points) or on the first half of the training data set, $x$-axis, and on half of the synthetic data set, $y$-axis (blue points).
 #| message: false
@@ -2401,7 +2401,7 @@ dataset <- readr::read_csv("data/IWPC_data.csv",
 
 The original database includes `r nrow(dataset)` patients with complete observations for these variables.  We refer to the table below for a brief description of the data, and emphasize that $A$ does precede $Y$.
 
-```{r, tab-descriptive-statistics-IWPC-data}
+```{r}
 #| label: tbl-descriptive-statistics-IWPC-data
 #| message: false
 #| warning: false
@@ -2632,7 +2632,7 @@ synth <- readr::read_csv("data/IWPC-synth_try#20.csv",
 
 The next chunk of code implements the first criterion.
 
-```{r, fig-criterion-1-IWPC}
+```{r}
 #| label: fig-criterion-1-IWPC
 #| fig-cap: Empirical c.d.f. of the distance to the nearest neighbor within the synthetic observations of the training and of the testing IWPC data points (logarithmic scale). The two c.d.f. are quite close.
 #| message: false
@@ -2739,7 +2739,7 @@ more challenging when $N=100$ compared to $N=1000$.
 
 The next chunk of code implements the second criterion, in its visual form.
 
-```{r, fig-criterion-2-IWPC}
+```{r}
 #| label: fig-criterion-2-IWPC
 #| fig-cap: Empirical c.d.f. of each covariate based on either the synthetic observations or the testing IPWC data set.
 #| message: false
@@ -2935,7 +2935,7 @@ the  six resulting  estimators on  the testing  data points.   To compare  the
 estimators,   we   use   scatter   plots    in   the   same   manner   as   in
 @sec-eval-quality-implemented.
 
-```{r, fig-criterion-3-IWPC}
+```{r}
 #| label: fig-criterion-3-IWPC
 #| fig-cap: Comparing predicted conditional probabilities that $A=1$ given $(W,V)$ (left) or predicted conditional means of $Y$ given $(A,W,V)$ (right) when a super learning algorithm is trained twice on two distinct halves of the training IWPC data set (red points) or on the first half of the training IWPC data set, $x$-axis, and on half of the synthetic data set, $y$-axis (blue points).
 #| message: false
