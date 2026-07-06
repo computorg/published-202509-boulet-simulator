@@ -1,1 +1,1 @@
-sudo apt-get install -y cowsay boxes libglpk-dev
+sudo apt-get install -y cowsay boxes libglpk-dev libnode-dev libpng-dev libx11-dev
