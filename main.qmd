@@ -1505,7 +1505,7 @@ optimization algorithm, we  rely on the minibatch  stochastic ascent algorithm
 presented below:
 
 ```pseudocode
-#| label: alg-sgd
+#| label: algo-sgd
 #| html-indent-size: "1.2em"
 #| html-comment-delimiter: "//"
 #| html-line-number: true
