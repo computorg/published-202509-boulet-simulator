@@ -1,6 +1,7 @@
 project:
   render:
-    - published-202509-boulet-simulator.qmd
+    - main.qmd
+    - README.qmd
   
 title: "Draw Me a Simulator"
 author:
@@ -31,8 +32,7 @@ bibliography: references.bib
 google-scholar: true
 github-user: computorg
 repo: published-202509-boulet-simulator
-draft: false # set to false once the build is running
-published: true # will be set to true once accepted
+status: published
 format:
   computo-html: default
   computo-pdf: default
