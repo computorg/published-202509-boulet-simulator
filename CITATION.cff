@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: If you use or cite this article, please use the metadata provided in 'preferred-citation'.
+title: Draw Me a Simulator
+authors:
+- family-names: Boulet
+  given-names: Sandrine
+  orcid: https://orcid.org/0000-0002-5709-4322
+  affiliation: Inria, Université Paris Cité, Inserm, HeKA, F-75015 Paris, France
+- family-names: Chambaz
+  given-names: Antoine
+  orcid: https://orcid.org/0000-0002-5592-6471
+  affiliation: Université Paris Cité, CNRS, MAP5, F-75006, Paris, France
+url: https://computo-journal.org/published-202509-boulet-simulator/
+preferred-citation:
+  type: article
+  title: Draw Me a Simulator
+  authors:
+  - family-names: Boulet
+    given-names: Sandrine
+    orcid: https://orcid.org/0000-0002-5709-4322
+    affiliation: Inria, Université Paris Cité, Inserm, HeKA, F-75015 Paris, France
+  - family-names: Chambaz
+    given-names: Antoine
+    orcid: https://orcid.org/0000-0002-5592-6471
+    affiliation: Université Paris Cité, CNRS, MAP5, F-75006, Paris, France
+  journal: Computo
+  issn: 2824-7795
+  url: https://computo-journal.org/published-202509-boulet-simulator/
+  publisher:
+    name: French Statistical Society
+  doi: 10.57750/w1hj-dw22
+  year: 2025
+doi: 10.57750/w1hj-dw22
+date-released: '2025-09-01'
