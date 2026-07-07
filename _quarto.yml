@@ -9,6 +9,7 @@ author:
   corresponding: true
   email: sandrine.boulet@inria.fr
   url: https://bouletsandrine.wixsite.com/website
+  orcid: 0000-0002-5709-4322
   affiliations:
   - name: Inria, Université Paris Cité, Inserm, HeKA, F-75015 Paris, France
 - name: Antoine Chambaz
@@ -31,6 +32,10 @@ citation:
   url: "https://computo-journal.org/published-202509-boulet-simulator/"
 bibliography: references.bib
 google-scholar: true
+related-identifiers:
+  - relation: IsVersionOf
+    type: URL
+    identifier: "https://hal.science/hal-05252426v1"
 github-user: computorg
 repo: published-202509-boulet-simulator
 status: published
