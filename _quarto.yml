@@ -18,7 +18,7 @@ author:
   orcid: 0000-0002-5592-6471
   affiliations:
   - name: Université Paris Cité, CNRS, MAP5, F-75006, Paris, France
-date: 09-08-2025
+date: 2025-09-08
 date-modified: last-modified
 abstract: >+
   This study investigates the use of Variational Auto-Encoders to build a simulator that approximates the law of genuine observations.  Using both simulated and real data in scenarios involving counterfactuality, we discuss the general task of evaluating a simulator's quality, with a focus on comparisons of statistical properties and predictive performance.  While the simulator built from simulated data shows minor discrepancies, the results with real data reveal more substantial challenges.  Beyond the technical analysis, we reflect on the broader implications of simulator design, and consider its role in modeling reality.
@@ -30,6 +30,7 @@ citation:
   publisher: "French Statistical Society"
   issn: "2824-7795"
   url: "https://computo-journal.org/published-202509-boulet-simulator/"
+  issued: "2025-09-08"
 bibliography: references.bib
 google-scholar: true
 related-identifiers:
